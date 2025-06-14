@@ -148,8 +148,27 @@ def parse_lib_deps():
 def generate_pom_xml():
     """Generate pom.xml file with dependencies from lib_deps"""
     maven_deps = parse_lib_deps()
+    project_config = env.GetProjectConfig()
+    env_section = "env:" + env.get("PIOENV", "")
     
-    pom_content = '''<?xml version="1.0" encoding="UTF-8"?>
+    # Get project information from platformio.ini
+    project_name = project_config.get(env_section, "project_name", fallback="java-project")
+    project_version = project_config.get(env_section, "project_version", fallback="1.0.0")
+    project_description = project_config.get(env_section, "project_description", fallback="Java project built with PlatformIO")
+    extra_repositories = project_config.get(env_section, "extra_repositories", fallback="")
+    
+    # Parse compiler source/target from build_flags
+    compiler_source = "18"
+    compiler_target = "18"
+    build_flags = project_config.get(env_section, "build_flags", fallback="")
+    for flag in build_flags.split('\n'):
+        flag = flag.strip()
+        if flag.startswith('-Dmaven.compiler.source='):
+            compiler_source = flag.split('=')[1]
+        elif flag.startswith('-Dmaven.compiler.target='):
+            compiler_target = flag.split('=')[1]
+    
+    pom_content = f'''<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
@@ -157,15 +176,34 @@ def generate_pom_xml():
     <modelVersion>4.0.0</modelVersion>
     
     <groupId>com.platformio</groupId>
-    <artifactId>java-project</artifactId>
-    <version>1.0.0</version>
+    <artifactId>{project_name}</artifactId>
+    <version>{project_version}</version>
     <packaging>jar</packaging>
     
+    <name>{project_name}</name>
+    <description>{project_description}</description>
+    
     <properties>
-        <maven.compiler.source>18</maven.compiler.source>
-        <maven.compiler.target>18</maven.compiler.target>
+        <maven.compiler.source>{compiler_source}</maven.compiler.source>
+        <maven.compiler.target>{compiler_target}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+    </properties>'''
+    
+    # Add repositories if specified
+    if extra_repositories.strip():
+        pom_content += '''
+    
+    <repositories>'''
+        repos = [repo.strip() for repo in extra_repositories.split('\n') if repo.strip()]
+        for i, repo in enumerate(repos):
+            repo_id = f"repo{i+1}"
+            pom_content += f'''
+        <repository>
+            <id>{repo_id}</id>
+            <url>{repo}</url>
+        </repository>'''
+        pom_content += '''
+    </repositories>'''
     
     <dependencies>
 '''
