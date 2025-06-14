@@ -21,18 +21,7 @@
         "java": {
             "script": "builder/main.py"
         }
-    },
-    "packages": {
-        "toolchain-jdk18": {
-            "type": "toolchain",
-            "version": "~18.0.0",
-            "optional": false
-        },
-        "tool-maven": {
-            "type": "tool",
-            "version": "~3.9.0",
-            "optional": false
-        }
+    },    "packages": {
     },
     "boards": {
         "generic": {

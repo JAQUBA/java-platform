@@ -8,21 +8,12 @@ class JavaplatformPlatform(PlatformBase):
         super().__init__(manifest_path)
         self.jdk_version = "18"
         self.maven_version = "3.9.6"
-    
-    def configure_default_packages(self, variables, targets):
+      def configure_default_packages(self, variables, targets):
         packages = super().configure_default_packages(variables, targets)
         
         # Initialize packages if None
         if packages is None:
             packages = {}
-        
-        # Ensure JDK 18 is installed
-        if "toolchain-jdk18" not in packages:
-            packages["toolchain-jdk18"] = {}
-            
-        # Ensure Maven is installed
-        if "tool-maven" not in packages:
-            packages["tool-maven"] = {}
             
         return packages
     
