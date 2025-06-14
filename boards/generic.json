@@ -1,37 +1,12 @@
 {
     "build": {
-        "core": "java",
-        "f_cpu": "0L",
-        "mcu": "generic"
+        "core": "java"
     },
-    "debug": {
-        "jlink_device": "generic",
-        "openocd_target": "generic",
-        "svd_path": "",
-        "tools": {
-            "jdb": {
-                "server": {
-                    "executable": "jdb",
-                    "arguments": [
-                        "-attach",
-                        "localhost:5005"
-                    ]
-                }
-            }
-        }
-    },
-    "frameworks": [
-        "java"
-    ],
+    "frameworks": ["java"],
     "name": "Generic Java Application",
-    "upload": {
-        "maximum_ram_size": 0,
-        "maximum_size": 0,
-        "protocol": "custom",
-        "protocols": [
-            "custom"
-        ]
-    },
     "url": "https://docs.oracle.com/en/java/",
-    "vendor": "Oracle Corporation"
+    "vendor": "Oracle Corporation",
+    "upload": {
+        "protocol": "custom"
+    }
 }
