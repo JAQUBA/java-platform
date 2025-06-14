@@ -168,10 +168,17 @@ def parse_lib_deps():
     return maven_deps
 
 def generate_pom_xml():
-    """Generate pom.xml file with dependencies from lib_deps"""
+    """Generate pom.xml file with dependencies from maven_dependencies"""
     maven_deps = parse_lib_deps()
     project_config = env.GetProjectConfig()
     env_section = "env:" + env.get("PIOENV", "")
+    
+    # Debug: print what we found
+    print(f"🔍 DEBUG: Found {len(maven_deps)} Maven dependencies:")
+    for dep in maven_deps:
+        print(f"   - {dep['groupId']}:{dep['artifactId']}:{dep['version']}")
+    
+    # ...existing code...
     
     # Get project information from platformio.ini
     try:
