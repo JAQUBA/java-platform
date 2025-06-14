@@ -8,7 +8,8 @@ class JavaplatformPlatform(PlatformBase):
         super().__init__(manifest_path)
         self.jdk_version = "18"
         self.maven_version = "3.9.6"
-      def configure_default_packages(self, variables, targets):
+    
+    def configure_default_packages(self, variables, targets):
         packages = super().configure_default_packages(variables, targets)
         
         # Initialize packages if None
