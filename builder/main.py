@@ -115,17 +115,37 @@ def install_maven():
     return maven_dir
 
 def parse_lib_deps():
-    """Parse lib_deps from platformio.ini and convert to Maven dependencies"""
+    """Parse maven_dependencies from platformio.ini and convert to Maven dependencies"""
     project_config = env.GetProjectConfig()
-    lib_deps = project_config.get("env:" + env.get("PIOENV", ""), "lib_deps", fallback="")
+    env_section = "env:" + env.get("PIOENV", "")
+    
+    # Try maven_dependencies first, fallback to lib_deps for compatibility
+    try:
+        maven_deps_str = project_config.get(env_section, "maven_dependencies", fallback="")
+    except:
+        maven_deps_str = ""
+    
+    if not maven_deps_str.strip():
+        # Fallback to lib_deps for compatibility
+        try:
+            lib_deps = project_config.get(env_section, "lib_deps", fallback="")
+            maven_deps_str = lib_deps
+        except:
+            maven_deps_str = ""
     
     maven_deps = []
-    for dep in lib_deps.split('\n'):
+    for dep in maven_deps_str.split('\n'):
         dep = dep.strip()
         if dep and not dep.startswith('#') and not dep.startswith(';'):
-            # Convert PlatformIO lib_deps format to Maven coordinates
-            # Format: groupId:artifactId@version or just artifactId@version
-            if '@' in dep:
+            # Support both formats: groupId:artifactId:version and groupId:artifactId@version
+            if ':' in dep and dep.count(':') >= 2:
+                # Maven format: groupId:artifactId:version
+                parts = dep.split(':')
+                group_id = parts[0]
+                artifact_id = parts[1]
+                artifact_version = ':'.join(parts[2:])  # Handle versions with colons
+            elif '@' in dep:
+                # PlatformIO format: groupId:artifactId@version
                 parts = dep.split('@')
                 artifact_version = parts[1]
                 artifact_info = parts[0]
@@ -136,12 +156,14 @@ def parse_lib_deps():
                     # Default group for common libraries
                     group_id = "org.apache.commons"
                     artifact_id = artifact_info
-                
-                maven_deps.append({
-                    'groupId': group_id,
-                    'artifactId': artifact_id,
-                    'version': artifact_version
-                })
+            else:
+                continue  # Skip invalid dependencies
+            
+            maven_deps.append({
+                'groupId': group_id,
+                'artifactId': artifact_id,
+                'version': artifact_version
+            })
     
     return maven_deps
 
