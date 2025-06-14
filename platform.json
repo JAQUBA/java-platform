@@ -17,18 +17,12 @@
     "repository": {
         "type": "git",
         "url": "https://github.com/your-repo/platformio-java.git"
-    },
-    "frameworks": {
+    },    "frameworks": {
         "java": {
-            "package": "framework-java",
             "script": "builder/main.py"
         }
-    },    "packages": {
-        "framework-java": {
-            "type": "framework",
-            "version": "~18.0.0",
-            "optional": false
-        },
+    },
+    "packages": {
         "toolchain-jdk18": {
             "type": "toolchain",
             "version": "~18.0.0",
