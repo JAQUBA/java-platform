@@ -3,7 +3,7 @@ import sys
 from platformio.platform.base import PlatformBase
 from platformio.util import get_systype
 
-class JavaPlatformPlatform(PlatformBase):
+class JavaplatformPlatform(PlatformBase):
     def __init__(self, manifest_path):
         super().__init__(manifest_path)
         self.jdk_version = "18"
