@@ -122,7 +122,7 @@ def parse_lib_deps():
     maven_deps = []
     for dep in lib_deps.split('\n'):
         dep = dep.strip()
-        if dep and not dep.startswith('#'):
+        if dep and not dep.startswith('#') and not dep.startswith(';'):
             # Convert PlatformIO lib_deps format to Maven coordinates
             # Format: groupId:artifactId@version or just artifactId@version
             if '@' in dep:
@@ -152,21 +152,39 @@ def generate_pom_xml():
     env_section = "env:" + env.get("PIOENV", "")
     
     # Get project information from platformio.ini
-    project_name = project_config.get(env_section, "project_name", fallback="java-project")
-    project_version = project_config.get(env_section, "project_version", fallback="1.0.0")
-    project_description = project_config.get(env_section, "project_description", fallback="Java project built with PlatformIO")
-    extra_repositories = project_config.get(env_section, "extra_repositories", fallback="")
+    try:
+        project_name = project_config.get(env_section, "project_name", fallback="java-project")
+    except:
+        project_name = "java-project"
+    
+    try:
+        project_version = project_config.get(env_section, "project_version", fallback="1.0.0")
+    except:
+        project_version = "1.0.0"
+    
+    try:
+        project_description = project_config.get(env_section, "project_description", fallback="Java project built with PlatformIO")
+    except:
+        project_description = "Java project built with PlatformIO"
+    
+    try:
+        extra_repositories = project_config.get(env_section, "extra_repositories", fallback="")
+    except:
+        extra_repositories = ""
     
     # Parse compiler source/target from build_flags
     compiler_source = "18"
     compiler_target = "18"
-    build_flags = project_config.get(env_section, "build_flags", fallback="")
-    for flag in build_flags.split('\n'):
-        flag = flag.strip()
-        if flag.startswith('-Dmaven.compiler.source='):
-            compiler_source = flag.split('=')[1]
-        elif flag.startswith('-Dmaven.compiler.target='):
-            compiler_target = flag.split('=')[1]
+    try:
+        build_flags = project_config.get(env_section, "build_flags", fallback="")
+        for flag in build_flags.split('\n'):
+            flag = flag.strip()
+            if flag.startswith('-Dmaven.compiler.source='):
+                compiler_source = flag.split('=')[1]
+            elif flag.startswith('-Dmaven.compiler.target='):
+                compiler_target = flag.split('=')[1]
+    except:
+        pass
     
     pom_content = f'''<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
@@ -205,6 +223,8 @@ def generate_pom_xml():
         pom_content += '''
     </repositories>'''
     
+    pom_content += '''
+    
     <dependencies>
 '''
     
@@ -226,8 +246,8 @@ def generate_pom_xml():
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.11.0</version>
                 <configuration>
-                    <source>18</source>
-                    <target>18</target>
+                    <source>''' + compiler_source + '''</source>
+                    <target>''' + compiler_target + '''</target>
                 </configuration>
             </plugin>
         </plugins>

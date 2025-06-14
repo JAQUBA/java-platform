@@ -23,8 +23,12 @@
             "package": "framework-java",
             "script": "builder/main.py"
         }
-    },
-    "packages": {
+    },    "packages": {
+        "framework-java": {
+            "type": "framework",
+            "version": "~18.0.0",
+            "optional": false
+        },
         "toolchain-jdk18": {
             "type": "toolchain",
             "version": "~18.0.0",
