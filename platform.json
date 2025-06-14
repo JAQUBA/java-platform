@@ -1,0 +1,60 @@
+{
+    "name": "java-platform",
+    "title": "Java Platform with JDK 18 & Maven",
+    "description": "Platform for Java development with automatic JDK 18 installation and Maven dependencies management",
+    "version": "1.0.0",
+    "homepage": "https://github.com/your-repo/platformio-java",
+    "license": "MIT",
+    "keywords": [
+        "java",
+        "jdk18",
+        "maven",
+        "embedded"
+    ],
+    "engines": {
+        "platformio": "^6.0.0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/your-repo/platformio-java.git"
+    },
+    "frameworks": {
+        "java": {
+            "package": "framework-java",
+            "script": "builder/main.py"
+        }
+    },
+    "packages": {
+        "toolchain-jdk18": {
+            "type": "toolchain",
+            "version": "~18.0.0",
+            "optional": false
+        },
+        "tool-maven": {
+            "type": "tool",
+            "version": "~3.9.0",
+            "optional": false
+        }
+    },
+    "boards": {
+        "generic": {
+            "name": "Generic Java Application",
+            "url": "https://docs.oracle.com/en/java/",
+            "vendor": "Oracle",
+            "frameworks": ["java"],
+            "upload": {
+                "protocol": "custom"
+            },
+            "debug": {
+                "tools": {
+                    "jdb": {
+                        "server": {
+                            "executable": "jdb",
+                            "arguments": ["-attach", "localhost:5005"]
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
